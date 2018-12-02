@@ -8,7 +8,7 @@ In this case, we observe the [universal gravitation](https://en.wikipedia.org/wi
 
 ## ECS
 [The book on `specs`](https://slide-rs.github.io/specs/) summarizes what an ECS is for quite nicely.
-At it's heart, instead of bundling data for an entity into one compositional structure, we instead take the structure-of-arrays idea to the exteme. An entity is _nothing but an _identity_. An entity _keys_ into datastructures to access its relevant data. As such, data is grouped by structure type, rather than by being bundled together to compose an entity.
+At it's heart, instead of bundling data for an entity into one compositional structure, we instead take the structure-of-arrays idea to the exteme. An entity is nothing but an _identity_. An entity _keys_ into datastructures to access its relevant data. As such, data is grouped by structure type, rather than by being bundled together to compose an entity.
 
 As the name suggests, an ECS system (no, the word "system is not redundant) can be viewed in terms of those three pillars. This is the breakdown of this project accordingly:
 1. Entities: There are 5 bodies in the system
