@@ -1,6 +1,7 @@
-use components::{Mass, Pos, Vel};
+use components::*;
 use specs::prelude::*;
 use std::iter;
+use actions::*;
 
 pub struct GravityForce;
 impl<'a> System<'a> for GravityForce {
@@ -104,14 +105,3 @@ impl<'a> System<'a> for Render {
         self.draw();
     }
 }
-
-// pub struct Debugger;
-// impl<'a> System<'a> for Debugger {
-//     type SystemData = (ReadStorage<'a, Pos>, ReadStorage<'a, Vel>);
-
-//     fn run(&mut self, (pos, vel): Self::SystemData) {
-//     	for (p, v) in (&pos, &vel).join() {
-//     		println!("pos {:?} vel {:?}", p, v);
-//     	}
-//     }
-// }

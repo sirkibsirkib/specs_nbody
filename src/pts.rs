@@ -68,7 +68,13 @@ impl Not for Pt2 {
 }
 impl Mul<f32> for Pt2 {
     type Output = Self;
-    fn mul(self, scalar: f32) -> Self {
+    fn mul(self, scalar: f32) -> Self::Output {
         Pt2::new(self.x * scalar, self.y * scalar)
+    }
+}
+impl Mul<Pt2> for f32 {
+    type Output = Pt2;
+    fn mul(self, pt: Pt2) -> Self::Output {
+        pt * self
     }
 }

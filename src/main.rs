@@ -1,26 +1,31 @@
 extern crate specs;
 use specs::prelude::*;
-use specs::World;
+use specs::{Entity, World};
+
 
 extern crate rand;
 use rand::distributions::{Distribution, Uniform};
 use rand::rngs::StdRng;
 use rand::SeedableRng;
 
-use std::{thread, time};
+use std::{thread, time, collections::{VecDeque, HashMap},};
 
 mod pts;
 use pts::Pt2;
 
 mod components;
-use components::{Mass, Pos, Vel};
+use components::*;
 
 mod systems;
 use systems::{GravityForce, PositionUpdate, Render};
 
+mod actions;
+use actions::*;
+
 fn main() {
     // define world
     let mut world = World::new();
+    let sleep_time = time::Duration::from_millis(50);
 
     // register components
     world.register::<Pos>();
@@ -30,7 +35,6 @@ fn main() {
     //setup systems
     let mut graviy_force_system = GravityForce;
     let mut position_update_system = PositionUpdate;
-    let sleep_time = time::Duration::from_millis(50);
 
     let (w, h) = (40, 20);
     let (x, y) = (-(w as isize) / 2, -(h as isize) / 2);
@@ -53,13 +57,41 @@ fn main() {
             .build();
     }
 
-    loop {
-        // send CTRL+C to kill
+    let mut action_q = VecDeque::new();
+    let mut actors: HashMap<Entity, Box<Actor>> = HashMap::new();
 
+    loop {
+        // PHASE 1: collect actions
+        {
+            let wrapped = ReadableState::wrap(&world);
+            for (&e, mut actor) in actors.iter_mut() {
+                actor.act(e, &mut action_q, wrapped);
+            }
+        }
+        
+        // PHASE 2: apply actions
+        for action in action_q.drain(..) {
+            match action {
+                Action::BumpEntity(e, pt) => {
+                    if let Some(ref mut vel) = world.write_storage::<Vel>().get_mut(e) {
+                        vel.0 += pt;
+                    } else {
+                        panic!("BAD AI!");
+                    }
+                }
+            }
+        }
+
+        // PHASE 3: systems
         graviy_force_system.run_now(&world.res);
         position_update_system.run_now(&world.res);
         world.maintain();
+
         render_system.run_now(&world.res);
         thread::sleep(sleep_time);
     }
 }
+
+
+struct TickId(usize);
+
