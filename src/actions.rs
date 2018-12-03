@@ -29,8 +29,9 @@ impl Actor for BoosterAi {
 	fn act(&mut self, entity: Entity, q: &mut ActionEnqueuer, r: ReadableState) {
 		self.to_go += 1;
 		if self.to_go > 30 {
-			let pos = r.get::<Pos>(entity).expect("AI expected POS");
-			q.enqueue(Action::BumpEntity(entity, pos.0 * -2.0));
+			let pos = r.read::<Pos>(entity);
+			let my_pos = pos.get(entity).expect("AI expected POS");
+			q.enqueue(Action::BumpEntity(entity, (*my_pos).0 * -2.0));
 			self.to_go = 0;
 		}
 	}
@@ -46,9 +47,8 @@ pub struct ReadableState<'a> {
 	w: &'a World
 }
 impl<'a> ReadableState<'a> {
-	#[inline]
-	pub fn get<T: specs::Component>(self, entity: Entity) -> Option<&'a T> {
-		self.w.read_storage().get(entity)
+	pub fn read<T: specs::Component>(self, entity: Entity) -> ReadStorage<'a, T> {
+		self.w.read_storage()
 	}
 	pub fn wrap(w: &'a World) -> Self {
 		Self { w }
