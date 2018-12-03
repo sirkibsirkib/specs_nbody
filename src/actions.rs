@@ -22,17 +22,22 @@ pub trait Actor {
 	fn act(&mut self, entity: Entity, q: &mut ActionEnqueuer, r: ReadableState);
 }
 
-struct BoosterAi {
+pub struct BoosterAi {
 	to_go: usize,
+}
+impl BoosterAi {
+	pub fn new() -> Self {
+		Self {to_go: 0}
+	}
 }
 impl Actor for BoosterAi {
 	fn act(&mut self, entity: Entity, q: &mut ActionEnqueuer, r: ReadableState) {
 		self.to_go += 1;
-		if self.to_go > 30 {
-			let pos = r.read::<Pos>(entity);
-			let my_pos = pos.get(entity).expect("AI expected POS");
-			q.enqueue(Action::BumpEntity(entity, (*my_pos).0 * -2.0));
-			self.to_go = 0;
+		if self.to_go > 20 {
+			if let Some(vel) = r.read::<Vel>(entity).get(entity) {
+				q.enqueue(Action::BumpEntity(entity, -2.0 * vel.0));
+				self.to_go = 0;
+			}
 		}
 	}
 }

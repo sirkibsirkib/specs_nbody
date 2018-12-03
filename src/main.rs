@@ -46,6 +46,14 @@ fn main() {
     let mass_distr = Uniform::new(1.0, 3.0);
     let x_distr = Uniform::new(x as f32, x as f32 + w as f32);
     let y_distr = Uniform::new(y as f32, y as f32 + h as f32);
+
+    let x = world.create_entity()
+        .with(Mass(mass_distr.sample(&mut rng)))
+        .with(Pos(Pt2::new(
+            x_distr.sample(&mut rng),
+            y_distr.sample(&mut rng),
+        ))).with(Vel(Pt2::NULL))
+        .build();
     for _ in 0..5 {
         world
             .create_entity()
@@ -59,6 +67,7 @@ fn main() {
 
     let mut action_q = VecDeque::new();
     let mut actors: HashMap<Entity, Box<Actor>> = HashMap::new();
+    actors.insert(x, Box::new(BoosterAi::new()));
 
     loop {
         // PHASE 1: collect actions

@@ -60,9 +60,9 @@ impl SubAssign for Pt2 {
         *self = *self - other;
     }
 }
-impl Not for Pt2 {
-    type Output = Pt2;
-    fn not(self) -> Pt2 {
+impl Neg for Pt2 {
+    type Output = Self;
+    fn neg(self) -> Self::Output {
         Pt2::new(-self.x, -self.y)
     }
 }

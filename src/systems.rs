@@ -20,7 +20,7 @@ impl<'a> System<'a> for GravityForce {
                     continue;
                 }
                 dist = dist.min(0.5);
-                let force = 0.01 * (m.0 / me_m.0) / dist * dist;
+                let force = 0.001 * (m.0 / me_m.0) / dist * dist;
                 me_v.0 += offset_toward_p.with_length(force);
             }
         }
